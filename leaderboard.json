@@ -1,0 +1,26 @@
+[
+  {
+    "name": "NOVA",
+    "score": 420,
+    "mode": "Story",
+    "createdAt": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "name": "AXIOM",
+    "score": 350,
+    "mode": "Arcade",
+    "createdAt": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "name": "LUX",
+    "score": 260,
+    "mode": "Arcade",
+    "createdAt": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "name": "Player",
+    "score": 50,
+    "mode": "Arcade",
+    "createdAt": "2026-05-03T18:58:26.799063Z"
+  }
+]

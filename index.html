@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neon Snake: Knightfall</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <section class="topbar">
+      <div class="brand">
+        <span class="brand-mark"></span>
+        <strong>Neon Snake</strong>
+      </div>
+      <div class="top-actions">
+        <button id="langToggle" class="small ghost">Deutsch</button>
+        <button id="openShop" class="small ghost" data-i18n="shop">Shop</button>
+        <button id="openLeaderboard" class="small ghost" data-i18n="leaderboard">Leaderboard</button>
+      </div>
+    </section>
+
+    <section class="hud" aria-label="Game status">
+      <div>
+        <span class="label" data-i18n="score">Score</span>
+        <strong id="score">0</strong>
+      </div>
+      <div>
+        <span class="label" data-i18n="credits">Credits</span>
+        <strong id="credits">0</strong>
+      </div>
+      <div>
+        <span class="label" data-i18n="wave">Wave</span>
+        <strong id="wave">1</strong>
+      </div>
+      <div>
+        <span class="label" data-i18n="best">Best</span>
+        <strong id="bestScore">0</strong>
+      </div>
+    </section>
+
+    <section class="game-wrap">
+      <canvas id="game" width="720" height="720" aria-label="Snake game board"></canvas>
+
+      <div id="mainMenu" class="overlay">
+        <div class="panel">
+          <p class="eyebrow">Knightfall Protocol</p>
+          <h1>Neon Snake</h1>
+          <p class="copy" data-i18n="mainCopy">Race through the neon grid, collect cores, unlock skins, and face armored knight snakes in story mode.</p>
+          <button id="arcadeMode" class="primary" data-i18n="arcade">Arcade</button>
+          <button id="storyMode" class="primary alt" data-i18n="story">Story Mode</button>
+          <button id="showHow" class="ghost" data-i18n="controls">Controls</button>
+        </div>
+      </div>
+
+      <div id="startMenu" class="overlay hidden">
+        <div class="panel compact">
+          <p class="eyebrow" id="modeLabel">Arcade Protocol</p>
+          <h2 data-i18n="ready">Ready?</h2>
+          <p class="copy" data-i18n="startCopy">Move with WASD or arrow keys. Press Space or Start when you are ready.</p>
+          <button id="startGame" class="primary" data-i18n="start">Start</button>
+          <button id="backToMain" class="ghost" data-i18n="back">Back</button>
+        </div>
+      </div>
+
+      <div id="pauseMenu" class="overlay hidden">
+        <div class="panel compact">
+          <p class="eyebrow">System Pause</p>
+          <h2 data-i18n="paused">Paused</h2>
+          <p class="copy" data-i18n="pauseCopy">Press Esc or Resume to return to the grid.</p>
+          <button id="resumeGame" class="primary" data-i18n="resume">Resume</button>
+          <button id="pauseToMain" class="ghost" data-i18n="mainMenu">Main Menu</button>
+        </div>
+      </div>
+
+      <div id="gameOverMenu" class="overlay hidden">
+        <div class="panel compact">
+          <p class="eyebrow" id="resultTag">Signal Lost</p>
+          <h2 id="resultTitle">Game Over</h2>
+          <p id="finalScore" class="copy">Score: 0</p>
+          <label class="name-field">
+            <span data-i18n="pilotName">Pilot name</span>
+            <input id="playerName" maxlength="14" value="Player">
+          </label>
+          <button id="submitScore" class="primary" data-i18n="submitScore">Submit Score</button>
+          <button id="retryGame" class="ghost" data-i18n="retry">Retry</button>
+          <button id="overToMain" class="ghost" data-i18n="mainMenu">Main Menu</button>
+        </div>
+      </div>
+
+      <div id="shopMenu" class="overlay hidden">
+        <div class="panel wide">
+          <p class="eyebrow" data-i18n="skinShop">Skin Shop</p>
+          <h2 data-i18n="chooseSkin">Choose Skin</h2>
+          <div id="skinGrid" class="skin-grid"></div>
+          <button id="closeShop" class="ghost" data-i18n="close">Close</button>
+        </div>
+      </div>
+
+      <div id="leaderboardMenu" class="overlay hidden">
+        <div class="panel wide">
+          <p class="eyebrow" data-i18n="onlineBoard">Online Leaderboard</p>
+          <h2 data-i18n="topPilots">Top Pilots</h2>
+          <ol id="leaderboardList" class="leaderboard"></ol>
+          <p class="fineprint" data-i18n="localBoardNote">Demo leaderboard saved in this browser. Add a backend later for real online scores.</p>
+          <button id="closeLeaderboard" class="ghost" data-i18n="close">Close</button>
+        </div>
+      </div>
+
+      <div id="howMenu" class="overlay hidden">
+        <div class="panel compact">
+          <p class="eyebrow">Controls</p>
+          <h2 data-i18n="controls">Controls</h2>
+          <p class="copy" data-i18n="howCopy">WASD or arrow keys move the snake. Esc pauses. Space starts or resumes.</p>
+          <button id="closeHow" class="primary" data-i18n="gotIt">Got it</button>
+        </div>
+      </div>
+
+      <div id="cutscene" class="overlay cinematic hidden">
+        <div class="cutscene-frame">
+          <p class="eyebrow">Story Mode</p>
+          <h2 id="cutsceneTitle" data-i18n="cutsceneTitle">The Grid Castle Falls</h2>
+          <p id="cutsceneText" class="copy" data-i18n="cutsceneText">Beyond the firewall, knight snakes guard the last energy crown. Break their formation before the grid goes dark.</p>
+          <button id="skipCutscene" class="primary" data-i18n="skip">Skip</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="mobile-controls" aria-label="Touch controls">
+      <button data-dir="up" aria-label="Up">UP</button>
+      <div>
+        <button data-dir="left" aria-label="Left">LEFT</button>
+        <button data-dir="down" aria-label="Down">DOWN</button>
+        <button data-dir="right" aria-label="Right">RIGHT</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>

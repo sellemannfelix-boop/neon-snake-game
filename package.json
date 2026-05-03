@@ -1,0 +1,16 @@
+{
+  "name": "neon-snake-knightfall",
+  "version": "1.0.0",
+  "description": "A futuristic Snake game with story mode, skins, and a server-backed leaderboard.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "snake",
+    "game",
+    "leaderboard"
+  ],
+  "author": "",
+  "license": "MIT"
+}
