@@ -16,6 +16,12 @@ const heroHpTextEl = document.getElementById("heroHpText");
 const enemyHpTextEl = document.getElementById("enemyHpText");
 const enemyNameEl = document.getElementById("enemyName");
 const enemyLevelEl = document.getElementById("enemyLevel");
+const difficultySelectEl = document.getElementById("difficultySelect");
+const soundToggleEl = document.getElementById("soundToggle");
+const debugLoginEl = document.getElementById("debugLogin");
+const debugToolsEl = document.getElementById("debugTools");
+const debugPasswordInputEl = document.getElementById("debugPasswordInput");
+const debugGodModeEl = document.getElementById("debugGodMode");
 
 const menus = {
   main: document.getElementById("mainMenu"),
@@ -24,6 +30,10 @@ const menus = {
   over: document.getElementById("gameOverMenu"),
   shop: document.getElementById("shopMenu"),
   leaderboard: document.getElementById("leaderboardMenu"),
+  missions: document.getElementById("missionsMenu"),
+  achievements: document.getElementById("achievementsMenu"),
+  settings: document.getElementById("settingsMenu"),
+  debug: document.getElementById("debugMenu"),
   how: document.getElementById("howMenu"),
   cutscene: document.getElementById("cutscene"),
   battle: document.getElementById("battleMenu"),
@@ -55,6 +65,10 @@ const text = {
   de: {
     shop: "Shop",
     leaderboard: "Leaderboard",
+    missions: "Missionen",
+    achievements: "Erfolge",
+    settings: "Optionen",
+    debug: "Debug",
     score: "Score",
     credits: "Credits",
     wave: "Welle",
@@ -101,6 +115,29 @@ const text = {
     shield: "Schild",
     chrono: "Zeitkern",
     jackpot: "Credit-Kern",
+    dailyMissions: "Tagesmissionen",
+    trophyRoom: "Trophaeenraum",
+    difficulty: "Schwierigkeit",
+    easy: "Einfach",
+    normal: "Normal",
+    hard: "Schwer",
+    sound: "Sound",
+    reward: "Belohnung",
+    claimed: "Abgeholt",
+    claim: "Abholen",
+    lockedProgress: "Fortschritt",
+    unlockedToast: "Freigeschaltet",
+    debugMenu: "Debug-Menue",
+    debugPassword: "Passwort",
+    unlock: "Entsperren",
+    addCredits: "+500 Credits",
+    unlockSkins: "Skins freischalten",
+    completeMissions: "Missionen abschliessen",
+    winStory: "Story gewinnen",
+    godMode: "Unsterblich",
+    resetProgress: "Fortschritt loeschen",
+    wrongPassword: "Falsches Passwort",
+    debugUnlocked: "Debug entsperrt",
     bite: "Byte-Biss",
     pulse: "Neon-Puls",
     charge: "Ueberladung",
@@ -114,6 +151,10 @@ const text = {
   en: {
     shop: "Shop",
     leaderboard: "Leaderboard",
+    missions: "Missions",
+    achievements: "Achievements",
+    settings: "Settings",
+    debug: "Debug",
     score: "Score",
     credits: "Credits",
     wave: "Wave",
@@ -160,6 +201,29 @@ const text = {
     shield: "Shield",
     chrono: "Time Core",
     jackpot: "Credit Core",
+    dailyMissions: "Daily Missions",
+    trophyRoom: "Trophy Room",
+    difficulty: "Difficulty",
+    easy: "Easy",
+    normal: "Normal",
+    hard: "Hard",
+    sound: "Sound",
+    reward: "Reward",
+    claimed: "Claimed",
+    claim: "Claim",
+    lockedProgress: "Progress",
+    unlockedToast: "Unlocked",
+    debugMenu: "Debug Menu",
+    debugPassword: "Password",
+    unlock: "Unlock",
+    addCredits: "+500 Credits",
+    unlockSkins: "Unlock Skins",
+    completeMissions: "Complete Missions",
+    winStory: "Win Story",
+    godMode: "God Mode",
+    resetProgress: "Reset Progress",
+    wrongPassword: "Wrong password",
+    debugUnlocked: "Debug unlocked",
     bite: "Byte Bite",
     pulse: "Neon Pulse",
     charge: "Overcharge",
@@ -184,6 +248,27 @@ const storyOpponents = [
   { name: "Volt Python", level: 8, maxHp: 102, attack: 17, color: "#27f5ff" },
 ];
 
+const difficultySettings = {
+  easy: { speed: -18, score: 0.8 },
+  normal: { speed: 0, score: 1 },
+  hard: { speed: 18, score: 1.35 },
+};
+
+const debugPassword = "Sonnentag79";
+
+const missions = [
+  { id: "cores", target: 12, reward: 60, de: "Sammle 12 Kerne", en: "Collect 12 cores" },
+  { id: "powerups", target: 4, reward: 80, de: "Sammle 4 Power-ups", en: "Collect 4 power-ups" },
+  { id: "storyHits", target: 6, reward: 100, de: "Triff 6 Story-Attacken", en: "Land 6 story attacks" },
+];
+
+const achievements = [
+  { id: "score100", target: 100, reward: 100, de: "100 Score erreichen", en: "Reach 100 score" },
+  { id: "skins3", target: 3, reward: 120, de: "3 Skins besitzen", en: "Own 3 skins" },
+  { id: "champion", target: 1, reward: 180, de: "Story-Modus gewinnen", en: "Win story mode" },
+  { id: "collector", target: 20, reward: 140, de: "20 Kerne insgesamt sammeln", en: "Collect 20 total cores" },
+];
+
 let snake;
 let previousSnake;
 let food;
@@ -199,6 +284,7 @@ let hero;
 let opponent;
 let storyBattleIndex = 0;
 let battleBusy = false;
+let battleTimers = [];
 let mode = "arcade";
 let state = "menu";
 let accumulator = 0;
@@ -209,12 +295,23 @@ let modalReturn = "main";
 let touchStart = null;
 let lastTouchStepAt = 0;
 let shakeUntil = 0;
+let sessionCores = 0;
+let sessionPowerups = 0;
+let storyHits = 0;
+let audioContext = null;
+let debugUnlocked = false;
+let debugGodMode = false;
 
 let language = localStorage.getItem("neonSnakeLang") || "de";
 let credits = Number(localStorage.getItem("neonSnakeCredits")) || 0;
 let bestScore = Number(localStorage.getItem("neonSnakeBest")) || 0;
 let ownedSkins = JSON.parse(localStorage.getItem("neonSnakeOwned") || '["volt"]');
 let activeSkin = localStorage.getItem("neonSnakeSkin") || "volt";
+let difficulty = localStorage.getItem("neonSnakeDifficulty") || "normal";
+let soundEnabled = localStorage.getItem("neonSnakeSound") === "true";
+let stats = JSON.parse(localStorage.getItem("neonSnakeStats") || '{"cores":0,"powerups":0,"storyHits":0,"storyWins":0}');
+let claimedMissions = JSON.parse(localStorage.getItem("neonSnakeMissions") || "[]");
+let claimedAchievements = JSON.parse(localStorage.getItem("neonSnakeAchievements") || "[]");
 let leaderboardOnline = false;
 let leaderboard = JSON.parse(localStorage.getItem("neonSnakeLeaderboard") || "null") || [
   { name: "NOVA", score: 420, mode: "Story" },
@@ -232,6 +329,11 @@ function saveProgress() {
   localStorage.setItem("neonSnakeOwned", JSON.stringify(ownedSkins));
   localStorage.setItem("neonSnakeSkin", activeSkin);
   localStorage.setItem("neonSnakeLeaderboard", JSON.stringify(leaderboard));
+  localStorage.setItem("neonSnakeDifficulty", difficulty);
+  localStorage.setItem("neonSnakeSound", String(soundEnabled));
+  localStorage.setItem("neonSnakeStats", JSON.stringify(stats));
+  localStorage.setItem("neonSnakeMissions", JSON.stringify(claimedMissions));
+  localStorage.setItem("neonSnakeAchievements", JSON.stringify(claimedAchievements));
 }
 
 async function loadLeaderboard() {
@@ -274,6 +376,11 @@ function applyLanguage() {
   });
   renderShop();
   renderLeaderboard();
+  renderMissions();
+  renderAchievements();
+  difficultySelectEl.value = difficulty;
+  soundToggleEl.checked = soundEnabled;
+  debugGodModeEl.checked = debugGodMode;
   updateHud();
 }
 
@@ -303,6 +410,9 @@ function resetGame(newMode = mode) {
   powerUntil = 0;
   score = 0;
   wave = 1;
+  sessionCores = 0;
+  sessionPowerups = 0;
+  storyHits = 0;
   placeFood();
   updateHud();
   draw(0);
@@ -330,6 +440,8 @@ function playStoryIntro() {
 
 function startGame() {
   if (state === "playing") return;
+  sessionCores = 0;
+  sessionPowerups = 0;
   state = "playing";
   accumulator = 0;
   lastTime = performance.now();
@@ -352,6 +464,7 @@ function resumeGame() {
 
 function goMain() {
   stopAnimation();
+  clearBattleTimers();
   setBattleButtons(false);
   state = "menu";
   resetGame("arcade");
@@ -361,6 +474,19 @@ function goMain() {
 function stopAnimation() {
   cancelAnimationFrame(animationId);
   window.clearTimeout(cutsceneTimer);
+}
+
+function scheduleBattle(callback, delay) {
+  const timer = window.setTimeout(() => {
+    battleTimers = battleTimers.filter((item) => item !== timer);
+    if (state === "battle") callback();
+  }, delay);
+  battleTimers.push(timer);
+}
+
+function clearBattleTimers() {
+  battleTimers.forEach((timer) => window.clearTimeout(timer));
+  battleTimers = [];
 }
 
 function loop(time) {
@@ -386,7 +512,7 @@ function loop(time) {
 function getCurrentStep() {
   const speedBonus = Math.min(32, Math.floor(score / 60) * 5);
   const powerSlow = activePower === "chrono" ? 24 : 0;
-  return Math.max(58, stepMs - speedBonus + powerSlow);
+  return Math.max(48, stepMs - speedBonus + powerSlow - difficultySettings[difficulty].speed);
 }
 
 function tick() {
@@ -400,6 +526,10 @@ function tick() {
   };
 
   if (hasCrashed(head)) {
+    if (debugGodMode) {
+      bounceFromCrash();
+      return;
+    }
     if (useShield()) return;
     endGame(false);
     return;
@@ -408,8 +538,11 @@ function tick() {
   snake.unshift(head);
 
   if (head.x === food.x && head.y === food.y) {
-    score += 10;
+    score += Math.round(10 * difficultySettings[difficulty].score);
     credits += 2;
+    sessionCores += 1;
+    stats.cores = (stats.cores || 0) + 1;
+    playTone(660, 0.06);
     burst(food.x, food.y, "#b5ff38");
     maybeSpawnPowerUp();
     placeFood();
@@ -452,7 +585,8 @@ function setDirection(newDirection) {
 function updateHud() {
   scoreEl.textContent = score || 0;
   creditsEl.textContent = credits;
-  waveEl.textContent = mode === "story" ? `${storyBattleIndex + 1}/3` : "-";
+  const storyWave = Math.min(storyBattleIndex + 1, storyOpponents.length);
+  waveEl.textContent = mode === "story" ? `${storyWave}/${storyOpponents.length}` : "-";
   bestScoreEl.textContent = bestScore;
   powerStatusEl.textContent = activePower ? t(activePower) : t("noPower");
 }
@@ -463,11 +597,16 @@ function formatText(key, values = {}) {
 
 function startStoryBattle() {
   stopAnimation();
+  clearBattleTimers();
   mode = "story";
   state = "battle";
   score = 0;
   wave = 1;
   storyBattleIndex = 0;
+  storyHits = 0;
+  powerUp = null;
+  activePower = null;
+  powerUntil = 0;
   hero = { maxHp: 92, hp: 92 };
   setupOpponent();
   updateHud();
@@ -478,8 +617,10 @@ function setupOpponent() {
   const template = storyOpponents[storyBattleIndex];
   opponent = { ...template, hp: template.maxHp };
   battleBusy = false;
+  setBattleButtons(false);
   battleLogEl.textContent = formatText("battleStart", { name: opponent.name });
   updateBattleUi();
+  updateHud();
 }
 
 function updateBattleUi() {
@@ -515,8 +656,9 @@ function playerBattleMove(move) {
     hero.hp = Math.min(hero.maxHp, hero.hp + 24);
     score += 8;
     battleLogEl.textContent = t("healed");
+    updateHud();
     updateBattleUi();
-    window.setTimeout(enemyBattleMove, 620);
+    scheduleBattle(enemyBattleMove, 620);
     return;
   }
 
@@ -525,25 +667,29 @@ function playerBattleMove(move) {
   if (attack.recoil) hero.hp = Math.max(1, hero.hp - attack.recoil);
   score += attack.damage + attack.credits;
   credits += attack.credits;
+  storyHits += 1;
+  stats.storyHits = (stats.storyHits || 0) + 1;
+  playTone(move === "charge" ? 190 : 520, 0.09);
   battleLogEl.textContent = `${formatText("playerAttack", { move: attack.label })} -${attack.damage}`;
   updateHud();
   updateBattleUi();
 
   if (opponent.hp <= 0) {
-    window.setTimeout(finishOpponent, 700);
+    scheduleBattle(finishOpponent, 700);
   } else {
-    window.setTimeout(enemyBattleMove, 760);
+    scheduleBattle(enemyBattleMove, 760);
   }
 }
 
 function enemyBattleMove() {
-  const damage = opponent.attack + Math.floor(Math.random() * 8);
+  if (!opponent || !hero || state !== "battle") return;
+  const damage = debugGodMode ? 0 : opponent.attack + Math.floor(Math.random() * 8);
   hero.hp = Math.max(0, hero.hp - damage);
   battleLogEl.textContent = `${formatText("enemyAttack", { name: opponent.name })} -${damage}`;
   updateBattleUi();
 
   if (hero.hp <= 0) {
-    window.setTimeout(() => endGame(false), 750);
+    scheduleBattle(() => endGame(false), 750);
   } else {
     battleBusy = false;
     setBattleButtons(false);
@@ -551,9 +697,12 @@ function enemyBattleMove() {
 }
 
 function finishOpponent() {
+  if (!opponent || state !== "battle") return;
+  setBattleButtons(true);
   battleLogEl.textContent = formatText("defeated", { name: opponent.name });
   score += 60 + storyBattleIndex * 35;
   credits += 30 + storyBattleIndex * 15;
+  playTone(740, 0.14);
   bestScore = Math.max(bestScore, score);
   saveProgress();
   updateHud();
@@ -561,12 +710,13 @@ function finishOpponent() {
 
   storyBattleIndex += 1;
   wave = storyBattleIndex + 1;
+  updateHud();
   if (storyBattleIndex >= storyOpponents.length) {
-    window.setTimeout(() => endGame(true), 900);
+    scheduleBattle(() => endGame(true), 900);
     return;
   }
 
-  window.setTimeout(setupOpponent, 1000);
+  scheduleBattle(setupOpponent, 1000);
 }
 
 function maybeSpawnPowerUp() {
@@ -590,6 +740,9 @@ function collectPowerUp(head) {
   if (!powerUp || head.x !== powerUp.x || head.y !== powerUp.y) return;
   score += powerUp.score;
   credits += powerUp.id === "jackpot" ? 25 : 6;
+  sessionPowerups += 1;
+  stats.powerups = (stats.powerups || 0) + 1;
+  playTone(880, 0.08);
   burst(powerUp.x, powerUp.y, powerUp.color);
   shake(160);
   if (powerUp.duration > 0) {
@@ -615,9 +768,18 @@ function useShield() {
   nextDirection = { x: -direction.x, y: -direction.y };
   direction = nextDirection;
   burst(snake[0].x, snake[0].y, "#60a5fa");
+  playTone(240, 0.12);
   shake(260);
   updateHud();
   return true;
+}
+
+function bounceFromCrash() {
+  nextDirection = { x: -direction.x, y: -direction.y };
+  direction = nextDirection;
+  burst(snake[0].x, snake[0].y, "#ffd166");
+  shake(180);
+  showToast("Debug: God Mode");
 }
 
 function shake(duration) {
@@ -625,8 +787,14 @@ function shake(duration) {
 }
 
 function endGame(victory) {
+  clearBattleTimers();
+  battleBusy = false;
+  setBattleButtons(false);
   state = "over";
   if (victory) score += 120;
+  if (victory && mode === "story") {
+    stats.storyWins = (stats.storyWins || 0) + 1;
+  }
   bestScore = Math.max(bestScore, score);
   credits += Math.floor(score / 20);
   saveProgress();
@@ -635,6 +803,8 @@ function endGame(victory) {
   finalScoreEl.textContent = victory ? `${t("victoryCopy")} ${t("scoreLine")}: ${score}` : `${t("scoreLine")}: ${score}`;
   updateHud();
   renderLeaderboard();
+  renderMissions();
+  renderAchievements();
   showMenu("over");
 }
 
@@ -696,6 +866,173 @@ function renderShop() {
     card.appendChild(button);
     grid.appendChild(card);
   });
+}
+
+function getMissionProgress(mission) {
+  if (mission.id === "cores") return sessionCores;
+  if (mission.id === "powerups") return sessionPowerups;
+  if (mission.id === "storyHits") return storyHits;
+  return 0;
+}
+
+function getAchievementProgress(achievement) {
+  if (achievement.id === "score100") return bestScore;
+  if (achievement.id === "skins3") return ownedSkins.length;
+  if (achievement.id === "champion") return stats.storyWins || 0;
+  if (achievement.id === "collector") return stats.cores || 0;
+  return 0;
+}
+
+function renderProgressList(containerId, items, claimed, progressGetter, claimHandler) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+  items.forEach((item) => {
+    const progress = Math.min(item.target, progressGetter(item));
+    const done = progress >= item.target;
+    const isClaimed = claimed.includes(item.id);
+    const row = document.createElement("article");
+    row.className = "progress-item";
+    const title = document.createElement("strong");
+    const detail = document.createElement("span");
+    const bar = document.createElement("div");
+    const fill = document.createElement("i");
+    const button = document.createElement("button");
+
+    title.textContent = language === "de" ? item.de : item.en;
+    detail.textContent = `${t("lockedProgress")}: ${progress}/${item.target} / ${t("reward")}: ${item.reward}`;
+    bar.className = "progress-bar";
+    fill.style.width = `${(progress / item.target) * 100}%`;
+    button.className = done && !isClaimed ? "primary" : "ghost";
+    button.textContent = isClaimed ? t("claimed") : t("claim");
+    button.disabled = !done || isClaimed;
+    button.addEventListener("click", () => claimHandler(item));
+
+    bar.appendChild(fill);
+    row.append(title, detail, bar, button);
+    container.appendChild(row);
+  });
+}
+
+function renderMissions() {
+  renderProgressList("missionsList", missions, claimedMissions, getMissionProgress, claimMission);
+}
+
+function renderAchievements() {
+  renderProgressList("achievementList", achievements, claimedAchievements, getAchievementProgress, claimAchievement);
+}
+
+function claimMission(mission) {
+  if (claimedMissions.includes(mission.id) || getMissionProgress(mission) < mission.target) return;
+  claimedMissions.push(mission.id);
+  credits += mission.reward;
+  saveProgress();
+  updateHud();
+  renderMissions();
+  showToast(`${t("unlockedToast")}: +${mission.reward}`);
+}
+
+function claimAchievement(achievement) {
+  if (claimedAchievements.includes(achievement.id) || getAchievementProgress(achievement) < achievement.target) return;
+  claimedAchievements.push(achievement.id);
+  credits += achievement.reward;
+  saveProgress();
+  updateHud();
+  renderAchievements();
+  showToast(`${t("unlockedToast")}: +${achievement.reward}`);
+}
+
+function showToast(message) {
+  const oldToast = document.querySelector(".toast");
+  if (oldToast) oldToast.remove();
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  window.setTimeout(() => toast.remove(), 2200);
+}
+
+function playTone(frequency, duration) {
+  if (!soundEnabled) return;
+  audioContext ||= new AudioContext();
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  oscillator.frequency.value = frequency;
+  oscillator.type = "sine";
+  gain.gain.value = 0.045;
+  oscillator.connect(gain);
+  gain.connect(audioContext.destination);
+  oscillator.start();
+  oscillator.stop(audioContext.currentTime + duration);
+}
+
+function unlockDebug() {
+  if (debugPasswordInputEl.value !== debugPassword) {
+    showToast(t("wrongPassword"));
+    return;
+  }
+  debugUnlocked = true;
+  debugLoginEl.classList.add("hidden");
+  debugToolsEl.classList.remove("hidden");
+  showToast(t("debugUnlocked"));
+}
+
+function addDebugCredits() {
+  credits += 500;
+  saveProgress();
+  updateHud();
+  renderShop();
+  showToast("+500 Credits");
+}
+
+function unlockAllSkins() {
+  ownedSkins = skins.map((skin) => skin.id);
+  saveProgress();
+  renderShop();
+  renderAchievements();
+  showToast(t("unlockSkins"));
+}
+
+function completeDebugMissions() {
+  sessionCores = Math.max(sessionCores, 12);
+  sessionPowerups = Math.max(sessionPowerups, 4);
+  storyHits = Math.max(storyHits, 6);
+  stats.cores = Math.max(stats.cores || 0, 20);
+  stats.powerups = Math.max(stats.powerups || 0, 4);
+  stats.storyHits = Math.max(stats.storyHits || 0, 6);
+  saveProgress();
+  renderMissions();
+  renderAchievements();
+  showToast(t("completeMissions"));
+}
+
+function debugWinStory() {
+  mode = "story";
+  score = Math.max(score, 500);
+  endGame(true);
+}
+
+function resetProgress() {
+  if (!window.confirm("Reset all local progress?")) return;
+  localStorage.removeItem("neonSnakeCredits");
+  localStorage.removeItem("neonSnakeBest");
+  localStorage.removeItem("neonSnakeOwned");
+  localStorage.removeItem("neonSnakeSkin");
+  localStorage.removeItem("neonSnakeStats");
+  localStorage.removeItem("neonSnakeMissions");
+  localStorage.removeItem("neonSnakeAchievements");
+  credits = 0;
+  bestScore = 0;
+  ownedSkins = ["volt"];
+  activeSkin = "volt";
+  stats = { cores: 0, powerups: 0, storyHits: 0, storyWins: 0 };
+  claimedMissions = [];
+  claimedAchievements = [];
+  resetGame("arcade");
+  saveProgress();
+  renderShop();
+  renderMissions();
+  renderAchievements();
+  showToast("Reset complete");
 }
 
 function burst(x, y, color) {
@@ -911,6 +1248,44 @@ document.getElementById("openLeaderboard").addEventListener("click", () => {
   openModal("leaderboard");
 });
 document.getElementById("closeLeaderboard").addEventListener("click", closeModal);
+document.getElementById("openMissions").addEventListener("click", () => {
+  renderMissions();
+  openModal("missions");
+});
+document.getElementById("closeMissions").addEventListener("click", closeModal);
+document.getElementById("openAchievements").addEventListener("click", () => {
+  renderAchievements();
+  openModal("achievements");
+});
+document.getElementById("closeAchievements").addEventListener("click", closeModal);
+document.getElementById("openSettings").addEventListener("click", () => openModal("settings"));
+document.getElementById("closeSettings").addEventListener("click", closeModal);
+document.getElementById("openDebug").addEventListener("click", () => {
+  debugLoginEl.classList.toggle("hidden", debugUnlocked);
+  debugToolsEl.classList.toggle("hidden", !debugUnlocked);
+  openModal("debug");
+});
+document.getElementById("closeDebug").addEventListener("click", closeModal);
+document.getElementById("unlockDebug").addEventListener("click", unlockDebug);
+document.getElementById("debugCredits").addEventListener("click", addDebugCredits);
+document.getElementById("debugUnlockSkins").addEventListener("click", unlockAllSkins);
+document.getElementById("debugCompleteMissions").addEventListener("click", completeDebugMissions);
+document.getElementById("debugWinStory").addEventListener("click", debugWinStory);
+document.getElementById("debugReset").addEventListener("click", resetProgress);
+debugGodModeEl.addEventListener("change", () => {
+  debugGodMode = debugGodModeEl.checked;
+  showToast(`God Mode: ${debugGodMode ? "ON" : "OFF"}`);
+});
+difficultySelectEl.addEventListener("change", () => {
+  difficulty = difficultySelectEl.value;
+  saveProgress();
+  showToast(t("difficulty"));
+});
+soundToggleEl.addEventListener("change", () => {
+  soundEnabled = soundToggleEl.checked;
+  saveProgress();
+  playTone(520, 0.08);
+});
 document.getElementById("langToggle").addEventListener("click", () => {
   language = language === "de" ? "en" : "de";
   localStorage.setItem("neonSnakeLang", language);

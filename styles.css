@@ -232,6 +232,11 @@ button:disabled {
   box-shadow: none;
 }
 
+.danger {
+  color: var(--danger);
+  border-color: rgba(255, 88, 104, 0.42);
+}
+
 .small {
   min-width: 92px;
   min-height: 36px;
@@ -331,6 +336,106 @@ input {
   color: var(--ink);
   background: rgba(3, 7, 18, 0.82);
   font: 700 1rem "Segoe UI", Arial, sans-serif;
+}
+
+select {
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: rgba(3, 7, 18, 0.92);
+  font: 700 0.95rem "Segoe UI", Arial, sans-serif;
+}
+
+.setting-row {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0;
+  color: var(--muted);
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+}
+
+.setting-row.inline {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+}
+
+.setting-row input[type="checkbox"] {
+  width: 24px;
+  height: 24px;
+  min-height: 0;
+  accent-color: var(--cyan);
+}
+
+.progress-list {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0;
+  text-align: left;
+}
+
+.debug-tools {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.debug-tools button {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+.progress-item {
+  padding: 12px;
+  border: 1px solid rgba(39, 245, 255, 0.22);
+  border-radius: 8px;
+  background: rgba(9, 15, 31, 0.86);
+}
+
+.progress-item strong,
+.progress-item span {
+  display: block;
+}
+
+.progress-item span {
+  color: var(--muted);
+  margin: 5px 0 8px;
+  font-size: 0.84rem;
+}
+
+.progress-bar {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(3, 7, 18, 0.86);
+}
+
+.progress-bar i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--cyan), var(--lime));
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  z-index: 20;
+  transform: translateX(-50%);
+  max-width: min(92vw, 420px);
+  padding: 12px 16px;
+  border: 1px solid rgba(39, 245, 255, 0.45);
+  border-radius: 8px;
+  color: var(--ink);
+  background: rgba(8, 13, 28, 0.94);
+  box-shadow: 0 0 28px rgba(39, 245, 255, 0.24);
 }
 
 .cinematic {

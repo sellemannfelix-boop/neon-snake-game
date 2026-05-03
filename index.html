@@ -17,6 +17,10 @@
         <button id="langToggle" class="small ghost">Deutsch</button>
         <button id="openShop" class="small ghost" data-i18n="shop">Shop</button>
         <button id="openLeaderboard" class="small ghost" data-i18n="leaderboard">Leaderboard</button>
+        <button id="openMissions" class="small ghost" data-i18n="missions">Missions</button>
+        <button id="openAchievements" class="small ghost" data-i18n="achievements">Achievements</button>
+        <button id="openSettings" class="small ghost" data-i18n="settings">Settings</button>
+        <button id="openDebug" class="small ghost" data-i18n="debug">Debug</button>
       </div>
     </section>
 
@@ -108,6 +112,70 @@
           <ol id="leaderboardList" class="leaderboard"></ol>
           <p class="fineprint" data-i18n="localBoardNote">Demo leaderboard saved in this browser. Add a backend later for real online scores.</p>
           <button id="closeLeaderboard" class="ghost" data-i18n="close">Close</button>
+        </div>
+      </div>
+
+      <div id="missionsMenu" class="overlay hidden">
+        <div class="panel wide">
+          <p class="eyebrow" data-i18n="dailyMissions">Daily Missions</p>
+          <h2 data-i18n="missions">Missions</h2>
+          <div id="missionsList" class="progress-list"></div>
+          <button id="closeMissions" class="ghost" data-i18n="close">Close</button>
+        </div>
+      </div>
+
+      <div id="achievementsMenu" class="overlay hidden">
+        <div class="panel wide">
+          <p class="eyebrow" data-i18n="trophyRoom">Trophy Room</p>
+          <h2 data-i18n="achievements">Achievements</h2>
+          <div id="achievementList" class="progress-list"></div>
+          <button id="closeAchievements" class="ghost" data-i18n="close">Close</button>
+        </div>
+      </div>
+
+      <div id="settingsMenu" class="overlay hidden">
+        <div class="panel compact">
+          <p class="eyebrow" data-i18n="settings">Settings</p>
+          <h2 data-i18n="settings">Settings</h2>
+          <label class="setting-row">
+            <span data-i18n="difficulty">Difficulty</span>
+            <select id="difficultySelect">
+              <option value="easy" data-i18n="easy">Easy</option>
+              <option value="normal" data-i18n="normal">Normal</option>
+              <option value="hard" data-i18n="hard">Hard</option>
+            </select>
+          </label>
+          <label class="setting-row inline">
+            <span data-i18n="sound">Sound</span>
+            <input id="soundToggle" type="checkbox">
+          </label>
+          <button id="closeSettings" class="ghost" data-i18n="close">Close</button>
+        </div>
+      </div>
+
+      <div id="debugMenu" class="overlay hidden">
+        <div class="panel wide">
+          <p class="eyebrow" data-i18n="debug">Debug</p>
+          <h2 data-i18n="debugMenu">Debug Menu</h2>
+          <div id="debugLogin">
+            <label class="name-field">
+              <span data-i18n="debugPassword">Password</span>
+              <input id="debugPasswordInput" type="password" autocomplete="off">
+            </label>
+            <button id="unlockDebug" class="primary" data-i18n="unlock">Unlock</button>
+          </div>
+          <div id="debugTools" class="debug-tools hidden">
+            <button id="debugCredits" class="primary" data-i18n="addCredits">+500 Credits</button>
+            <button id="debugUnlockSkins" class="ghost" data-i18n="unlockSkins">Unlock Skins</button>
+            <button id="debugCompleteMissions" class="ghost" data-i18n="completeMissions">Complete Missions</button>
+            <button id="debugWinStory" class="ghost" data-i18n="winStory">Win Story</button>
+            <label class="setting-row inline">
+              <span data-i18n="godMode">God Mode</span>
+              <input id="debugGodMode" type="checkbox">
+            </label>
+            <button id="debugReset" class="ghost danger" data-i18n="resetProgress">Reset Progress</button>
+          </div>
+          <button id="closeDebug" class="ghost" data-i18n="close">Close</button>
         </div>
       </div>
 
