@@ -37,6 +37,10 @@
         <span class="label" data-i18n="best">Best</span>
         <strong id="bestScore">0</strong>
       </div>
+      <div>
+        <span class="label" data-i18n="power">Power</span>
+        <strong id="powerStatus">-</strong>
+      </div>
     </section>
 
     <section class="game-wrap">
@@ -122,6 +126,34 @@
           <h2 id="cutsceneTitle" data-i18n="cutsceneTitle">The Grid Castle Falls</h2>
           <p id="cutsceneText" class="copy" data-i18n="cutsceneText">Beyond the firewall, knight snakes guard the last energy crown. Break their formation before the grid goes dark.</p>
           <button id="skipCutscene" class="primary" data-i18n="skip">Skip</button>
+        </div>
+      </div>
+
+      <div id="battleMenu" class="overlay battle-overlay hidden">
+        <div class="battle-panel">
+          <div class="battle-stage">
+            <article class="fighter-card enemy-card">
+              <span class="label" id="enemyLevel">Lv. 1</span>
+              <h3 id="enemyName">Sparkadder</h3>
+              <div class="hp-track"><span id="enemyHpBar"></span></div>
+              <p id="enemyHpText">60 / 60</p>
+              <div class="fighter-sprite enemy-sprite"></div>
+            </article>
+            <article class="fighter-card player-card">
+              <span class="label">Lv. 7</span>
+              <h3 id="heroName">Neon Snake</h3>
+              <div class="hp-track"><span id="heroHpBar"></span></div>
+              <p id="heroHpText">90 / 90</p>
+              <div class="fighter-sprite hero-sprite"></div>
+            </article>
+          </div>
+          <p id="battleLog" class="battle-log">A wild Sparkadder appears.</p>
+          <div class="battle-actions">
+            <button id="attackBite" class="primary" data-i18n="bite">Byte Bite</button>
+            <button id="attackPulse" class="ghost" data-i18n="pulse">Neon Pulse</button>
+            <button id="attackCharge" class="ghost" data-i18n="charge">Overcharge</button>
+            <button id="battleHeal" class="ghost" data-i18n="heal">Heal</button>
+          </div>
         </div>
       </div>
     </section>

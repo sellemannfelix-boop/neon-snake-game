@@ -81,7 +81,7 @@ body {
 
 .hud {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 10px;
 }
 
@@ -339,6 +339,114 @@ input {
     repeating-linear-gradient(90deg, rgba(255, 209, 102, 0.12), rgba(255, 209, 102, 0.12) 1px, transparent 1px, transparent 18px);
 }
 
+.battle-overlay {
+  background:
+    linear-gradient(rgba(4, 7, 17, 0.44), rgba(4, 7, 17, 0.88)),
+    radial-gradient(circle at 20% 20%, rgba(181, 255, 56, 0.12), transparent 30%),
+    radial-gradient(circle at 78% 70%, rgba(255, 61, 242, 0.14), transparent 28%);
+}
+
+.battle-panel {
+  width: min(94%, 680px);
+  max-height: 94%;
+  overflow: auto;
+  padding: clamp(14px, 3vw, 26px);
+  border: 1px solid rgba(39, 245, 255, 0.52);
+  border-radius: 8px;
+  background: rgba(8, 13, 28, 0.94);
+  box-shadow: 0 0 38px rgba(39, 245, 255, 0.2), inset 0 0 24px rgba(255, 61, 242, 0.08);
+}
+
+.battle-stage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  align-items: end;
+}
+
+.fighter-card {
+  min-height: 230px;
+  padding: 14px;
+  border: 1px solid rgba(39, 245, 255, 0.24);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(12, 21, 45, 0.92), rgba(4, 8, 20, 0.88));
+}
+
+.fighter-card h3 {
+  margin: 4px 0 10px;
+  font-size: clamp(1rem, 3vw, 1.35rem);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.hp-track {
+  height: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(238, 247, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(3, 7, 18, 0.9);
+}
+
+.hp-track span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--lime), var(--cyan));
+  transition: width 220ms ease;
+}
+
+.fighter-card p {
+  margin: 8px 0 12px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.fighter-sprite {
+  width: min(58%, 140px);
+  aspect-ratio: 1;
+  margin: 12px auto 0;
+  border-radius: 28% 44% 34% 46%;
+  box-shadow: 0 0 28px currentColor;
+}
+
+.enemy-sprite {
+  color: var(--pink);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0 13%, transparent 13%),
+    linear-gradient(135deg, var(--pink), var(--gold));
+}
+
+.hero-sprite {
+  color: var(--cyan);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0 13%, transparent 13%),
+    linear-gradient(135deg, var(--cyan), var(--lime));
+}
+
+.battle-log {
+  min-height: 56px;
+  margin: 14px 0;
+  padding: 12px;
+  border: 1px solid rgba(39, 245, 255, 0.22);
+  border-radius: 8px;
+  color: var(--ink);
+  background: rgba(3, 7, 18, 0.72);
+  line-height: 1.45;
+}
+
+.battle-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.battle-actions button {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
 .cutscene-frame {
   animation: scanIn 700ms ease both;
 }
@@ -480,5 +588,17 @@ input {
   .skin-card {
     min-height: 150px;
     padding: 10px;
+  }
+
+  .battle-stage {
+    grid-template-columns: 1fr;
+  }
+
+  .fighter-card {
+    min-height: 166px;
+  }
+
+  .fighter-sprite {
+    width: 92px;
   }
 }
