@@ -652,11 +652,16 @@ function handleKey(event) {
 }
 
 function handleTouchStart(event) {
+  event.preventDefault();
   const touch = event.changedTouches[0];
   touchStart = {
     x: touch.clientX,
     y: touch.clientY,
   };
+}
+
+function handleTouchMove(event) {
+  event.preventDefault();
 }
 
 function handleTouchEnd(event) {
@@ -706,7 +711,8 @@ document.getElementById("langToggle").addEventListener("click", () => {
 });
 
 window.addEventListener("keydown", handleKey);
-canvas.addEventListener("touchstart", handleTouchStart, { passive: true });
+canvas.addEventListener("touchstart", handleTouchStart, { passive: false });
+canvas.addEventListener("touchmove", handleTouchMove, { passive: false });
 canvas.addEventListener("touchend", handleTouchEnd, { passive: false });
 
 resetGame("arcade");
