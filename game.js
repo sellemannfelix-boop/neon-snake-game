@@ -86,6 +86,7 @@ const text = {
     gameOver: "Game Over",
     victoryCopy: "Du hast die Ritter-Snakes besiegt und das Grid wieder erleuchtet.",
     scoreLine: "Score",
+    swipeHint: "Wische auf dem Spielfeld, um zu steuern.",
   },
   en: {
     shop: "Shop",
@@ -130,6 +131,7 @@ const text = {
     gameOver: "Game Over",
     victoryCopy: "You defeated the knight snakes and lit the grid again.",
     scoreLine: "Score",
+    swipeHint: "Swipe on the game board to steer.",
   },
 };
 
@@ -149,6 +151,7 @@ let lastTime = 0;
 let animationId = 0;
 let cutsceneTimer = 0;
 let modalReturn = "main";
+let touchStart = null;
 
 let language = localStorage.getItem("neonSnakeLang") || "de";
 let credits = Number(localStorage.getItem("neonSnakeCredits")) || 0;
@@ -648,6 +651,32 @@ function handleKey(event) {
   }
 }
 
+function handleTouchStart(event) {
+  const touch = event.changedTouches[0];
+  touchStart = {
+    x: touch.clientX,
+    y: touch.clientY,
+  };
+}
+
+function handleTouchEnd(event) {
+  if (!touchStart) return;
+  const touch = event.changedTouches[0];
+  const dx = touch.clientX - touchStart.x;
+  const dy = touch.clientY - touchStart.y;
+  const distance = Math.hypot(dx, dy);
+  touchStart = null;
+
+  if (distance < 24) return;
+  event.preventDefault();
+
+  if (Math.abs(dx) > Math.abs(dy)) {
+    setDirection(dx > 0 ? { x: 1, y: 0 } : { x: -1, y: 0 });
+  } else {
+    setDirection(dy > 0 ? { x: 0, y: 1 } : { x: 0, y: -1 });
+  }
+}
+
 document.getElementById("arcadeMode").addEventListener("click", () => openStart("arcade"));
 document.getElementById("storyMode").addEventListener("click", playStoryIntro);
 document.getElementById("skipCutscene").addEventListener("click", () => openStart("story"));
@@ -676,19 +705,9 @@ document.getElementById("langToggle").addEventListener("click", () => {
   applyLanguage();
 });
 
-document.querySelectorAll("[data-dir]").forEach((button) => {
-  button.addEventListener("click", () => {
-    const map = {
-      up: { x: 0, y: -1 },
-      down: { x: 0, y: 1 },
-      left: { x: -1, y: 0 },
-      right: { x: 1, y: 0 },
-    };
-    setDirection(map[button.dataset.dir]);
-  });
-});
-
 window.addEventListener("keydown", handleKey);
+canvas.addEventListener("touchstart", handleTouchStart, { passive: true });
+canvas.addEventListener("touchend", handleTouchEnd, { passive: false });
 
 resetGame("arcade");
 applyLanguage();

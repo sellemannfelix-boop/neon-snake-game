@@ -356,12 +356,16 @@ input {
   text-align: center;
 }
 
-.mobile-controls button {
-  min-width: 72px;
-  width: 72px;
-  height: 48px;
-  padding: 0;
-  font-size: 0.72rem;
+.mobile-controls p {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(39, 245, 255, 0.24);
+  border-radius: 8px;
+  color: var(--muted);
+  background: rgba(9, 15, 31, 0.66);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 @media (max-width: 720px) {
@@ -428,7 +432,7 @@ input {
   .mobile-controls {
     grid-column: 3;
     grid-row: 2;
-    display: block;
+    display: none;
     align-self: center;
     width: 100%;
   }
